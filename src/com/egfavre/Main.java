@@ -84,6 +84,54 @@ public class Main {
         Spark.externalStaticFileLocation("public");
         Spark.init();
 
+        //Create a GET route called /user that calls selectUsers and returns the data as JSON.
+        Spark.get(
+                "/getUser",
+                (request, response) -> {
+                    ArrayList<User> userList = selectAllUsers(conn);
+                    JsonSerializer s = new JsonSerializer();
+                    return s.serialize(userList);
+                }
+        );
+
+        //Create a POST route called /user that parses request.body() into a User object
+        // and calls insertUser to put it in the database.
+        Spark.post(
+                "/addUser",
+                (request, response) -> {
+                    String body = request.body();
+                    //body contains json
+                    JsonParser p = new JsonParser();
+                    //parse body and add to message.class
+                    User user = p.parse(body, User.class);
+                    insertUser(conn, user);
+                    return "";
+                }
+        );
+
+        //Create a PUT route called /user that parses request.body() into a User object
+        // and calls updateUser to update it in the database.
+        Spark.post(
+                "/updateUser",
+                (request, response) -> {
+                    String body = request.body();
+                    JsonParser p = new JsonParser();
+                    User user = p.parse(body, User.class);
+                    updateUsers(conn, user.username, user.address, user.email, user.id );
+                    return "";
+                }
+        );
+
+        //Create a DELETE route called /user/:id that gets the id via request.params(":id")
+        // and gives it to deleteUser to delete it in the database.
+        Spark.delete(
+                "/deleteUser",
+                (request, response) -> {
+                    User user = selectOneUser(conn, "");
+                    deleteUser(conn, user.id);
+                    return "";
+                }
+        );
     }
 
 }
