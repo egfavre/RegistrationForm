@@ -33,12 +33,12 @@ public class MainTest {
         Connection conn = startConnection();
         User user = new User(1, "test", "test", "test");
         Main.insertUser(conn, user);
-        Main.updateUsers(conn, "testN", "testA", "testE", 1);
-        user = Main.selectOneUser(conn, "testN");
-
+        User newInfo = new User(1, "testA", "testB", "testC");
+        Main.updateUsers(conn, newInfo);
+        ArrayList<User> testList = Main.selectAllUsers(conn);
         conn.close();
 
-        assertTrue(user.address.equals("testA"));
+        assertTrue(testList.get(0).address.equalsIgnoreCase("testB"));
     }
 
     @Test
@@ -47,9 +47,10 @@ public class MainTest {
         User user = new User(1, "test", "test", "test");
         Main.insertUser(conn, user);
         Main.deleteUser(conn, 1);
-        ArrayList testList = Main.selectAllUsers(conn);
+        ArrayList<User> userList = Main.selectAllUsers(conn);
 
         conn.close();
-        assertTrue(testList.size() == 0);
+
+        assertTrue(userList.size() < 1);
     }
 }

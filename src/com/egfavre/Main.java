@@ -54,18 +54,12 @@ public class Main {
         return user;
     }
 
-//from stackoverflow: http://stackoverflow.com/questions/9079617/update-multiple-columns-in-sql
-//  Update table1 set (a,b,c,d,e,f,g,h,i,j,k)=
-//    (t2.a,t2.b,t2.c,t2.d,t2.e,t2.f,t2.g,t2.h,t2.i,t2.j,t2.k)
-//    from table2 t2
-//    where table1.id=table2.id
 
-    public static void updateUsers(Connection conn, String newUsername, String newAddress, String newEmail, Integer id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE users SET (username, address, email) = (?, ?, ?) WHERE id = ?");
-        stmt.setString(1, newUsername);
-        stmt.setString(2, newAddress);
-        stmt.setString(3, newEmail);
-        stmt.setInt(4, id);
+    public static void updateUsers(Connection conn, User user) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("UPDATE users SET username = ?, address = ?, email = ? WHERE id = id");
+        stmt.setString(1, user.username);
+        stmt.setString(2, user.address);
+        stmt.setString(3, user.email);
         stmt.execute();
     }
 
@@ -86,7 +80,7 @@ public class Main {
 
         //Create a GET route called /user that calls selectUsers and returns the data as JSON.
         Spark.get(
-                "/getUser",
+                "/user",
                 (request, response) -> {
                     ArrayList<User> userList = selectAllUsers(conn);
                     JsonSerializer s = new JsonSerializer();
@@ -97,7 +91,7 @@ public class Main {
         //Create a POST route called /user that parses request.body() into a User object
         // and calls insertUser to put it in the database.
         Spark.post(
-                "/addUser",
+                "/user",
                 (request, response) -> {
                     String body = request.body();
                     //body contains json
@@ -112,12 +106,12 @@ public class Main {
         //Create a PUT route called /user that parses request.body() into a User object
         // and calls updateUser to update it in the database.
         Spark.post(
-                "/updateUser",
+                "/user",
                 (request, response) -> {
                     String body = request.body();
                     JsonParser p = new JsonParser();
-                    User user = p.parse(body, User.class);
-                    updateUsers(conn, user.username, user.address, user.email, user.id );
+                    User newUser = p.parse(body, User.class);
+                    updateUsers(conn, newUser);
                     return "";
                 }
         );
@@ -125,10 +119,10 @@ public class Main {
         //Create a DELETE route called /user/:id that gets the id via request.params(":id")
         // and gives it to deleteUser to delete it in the database.
         Spark.delete(
-                "/deleteUser",
+                "/user/:id",
                 (request, response) -> {
-                    User user = selectOneUser(conn, "");
-                    deleteUser(conn, user.id);
+                    int id = Integer.valueOf(request.params(":id"));
+                    deleteUser(conn, id);
                     return "";
                 }
         );
