@@ -55,12 +55,19 @@ public class Main {
     }
 
 
-    public static void updateUsers(Connection conn, User user) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE users SET username = ?, address = ?, email = ? WHERE id = id");
+    public static void updateUsers(Connection conn, User user, Integer userId) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("UPDATE users SET username = ? WHERE id = ?");
+        PreparedStatement stmt1 = conn.prepareStatement("UPDATE users SET address = ? WHERE id = ?");
+        PreparedStatement stmt2 = conn.prepareStatement("UPDATE users SET email = ? WHERE id = ?");
         stmt.setString(1, user.username);
-        stmt.setString(2, user.address);
-        stmt.setString(3, user.email);
+        stmt1.setString(1, user.address);
+        stmt2.setString(1, user.email);
+        stmt.setInt(2, userId);
+        stmt1.setInt(2, userId);
+        stmt2.setInt(2, userId);
         stmt.execute();
+        stmt1.execute();
+        stmt2.execute();
     }
 
     public static void deleteUser(Connection conn, Integer id) throws SQLException {
@@ -105,13 +112,13 @@ public class Main {
 
         //Create a PUT route called /user that parses request.body() into a User object
         // and calls updateUser to update it in the database.
-        Spark.post(
+        Spark.put(
                 "/user",
                 (request, response) -> {
                     String body = request.body();
                     JsonParser p = new JsonParser();
-                    User newUser = p.parse(body, User.class);
-                    updateUsers(conn, newUser);
+                    User user = p.parse(body, User.class);
+                    updateUsers(conn, user, user.id);
                     return "";
                 }
         );

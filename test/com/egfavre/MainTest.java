@@ -34,7 +34,7 @@ public class MainTest {
         User user = new User(1, "test", "test", "test");
         Main.insertUser(conn, user);
         User newInfo = new User(1, "testA", "testB", "testC");
-        Main.updateUsers(conn, newInfo);
+        Main.updateUsers(conn, newInfo, 1);
         ArrayList<User> testList = Main.selectAllUsers(conn);
         conn.close();
 
