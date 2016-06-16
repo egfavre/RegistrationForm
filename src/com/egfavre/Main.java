@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 public class Main {
 
+    //this is my comment
+
     public static void createTables(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, username VARCHAR, address VARCHAR, email VARCHAR)");
