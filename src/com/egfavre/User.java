@@ -3,20 +3,20 @@ package com.egfavre;
 /**
  * Created by user on 6/15/16.
  */
-public class User {
+public class Poop {
     Integer id;
     String username;
     String address;
     String email;
 
-    public User(Integer id, String username, String address, String email) {
+    public Poop(Integer id, String username, String address, String email) {
         this.id = id;
         this.username = username;
         this.address = address;
         this.email = email;
     }
 
-    public User() {
+    public Poop() {
     }
 
     public Integer getId() {
